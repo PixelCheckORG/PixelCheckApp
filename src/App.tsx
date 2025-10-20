@@ -18,10 +18,13 @@ function App() {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<Home />} />
+                <Route 
+                    path="/" 
+                    element={user ? <Navigate to="/dashboard" replace /> : <Home />} 
+                />
                 <Route
                     path="/dashboard"
-                    element={user ? <Dashboard /> : <Navigate to="/" />}
+                    element={user ? <Dashboard /> : <Navigate to="/" replace />}
                 />
                 <Route path="/pricing" element={<Pricing />} />
             </Routes>

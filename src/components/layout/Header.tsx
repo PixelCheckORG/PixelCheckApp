@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuthStore } from '../../store/useAuthStore';
 import LoginModal from '../auth/LoginModal';
 import RegisterModal from '../auth/RegisterModal';
@@ -23,10 +24,13 @@ export default function Header() {
             <header className="bg-white shadow-sm">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-16">
-                        <div className="flex items-center space-x-3">
+                        <Link 
+                            to={user ? "/dashboard" : "/"} 
+                            className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
+                        >
                             <span className="text-3xl">🔍</span>
                             <h1 className="text-2xl font-bold text-gray-900">PixelCheck</h1>
-                        </div>
+                        </Link>
 
                         <nav className="flex items-center space-x-6">
                             {user ? (
@@ -37,6 +41,12 @@ export default function Header() {
                                             Premium
                                         </span>
                                     )}
+                                    <Link
+                                        to="/pricing"
+                                        className="text-gray-600 hover:text-gray-900 transition-colors"
+                                    >
+                                        Planes
+                                    </Link>
                                     <button
                                         onClick={signOut}
                                         className="text-gray-600 hover:text-gray-900 transition-colors"
@@ -46,6 +56,12 @@ export default function Header() {
                                 </>
                             ) : (
                                 <>
+                                    <Link
+                                        to="/pricing"
+                                        className="text-gray-600 hover:text-gray-900 transition-colors"
+                                    >
+                                        Planes
+                                    </Link>
                                     <button
                                         onClick={() => setShowLoginModal(true)}
                                         className="text-gray-600 hover:text-gray-900 transition-colors"

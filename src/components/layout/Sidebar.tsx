@@ -6,15 +6,16 @@ interface SidebarProps {
     onNewAnalysis: () => void;
     onSelectAnalysis: (analysis: ImageAnalysis) => void;
     currentAnalysisId?: string;
+    refreshTrigger?: number;
 }
 
-export default function Sidebar({ onNewAnalysis, onSelectAnalysis, currentAnalysisId }: SidebarProps) {
+export default function Sidebar({ onNewAnalysis, onSelectAnalysis, currentAnalysisId, refreshTrigger }: SidebarProps) {
     const [analyses, setAnalyses] = useState<ImageAnalysis[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         loadAnalyses();
-    }, []);
+    }, [refreshTrigger]);
 
     const loadAnalyses = async () => {
         try {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/layout/Header';
 import Sidebar from '../components/layout/Sidebar';
@@ -19,6 +19,7 @@ export default function Dashboard() {
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [selectedAnalysis, setSelectedAnalysis] = useState<ImageAnalysis | null>(null);
     const [showNewAnalysis, setShowNewAnalysis] = useState(true);
+    const [refreshSidebar, setRefreshSidebar] = useState(0);
 
     useEffect(() => {
         if (!user) {
@@ -26,18 +27,21 @@ export default function Dashboard() {
         }
     }, [user, navigate]);
 
-    const handleNewAnalysis = () => {
+    const handleNewAnalysis = useCallback(() => {
         setSelectedAnalysis(null);
         setResults(null);
         setSelectedFile(null);
         setImageUrl('');
         setShowNewAnalysis(true);
-    };
+        setIsAnalyzing(false);
+    }, []);
 
-    const handleSelectAnalysis = (analysis: ImageAnalysis) => {
+    const handleSelectAnalysis = useCallback((analysis: ImageAnalysis) => {
         setSelectedAnalysis(analysis);
         setShowNewAnalysis(false);
         setImageUrl(analysis.image_url);
+        setSelectedFile(null);
+        setIsAnalyzing(false);
         
         // Reconstruir resultados desde la base de datos
         const reconstructedResults: AnalysisResultsType = {
@@ -63,15 +67,16 @@ export default function Dashboard() {
         };
         
         setResults(reconstructedResults);
-    };
+    }, []);
 
-    const handleImageSelect = async (file: File) => {
+    const handleImageSelect = useCallback(async (file: File) => {
         setSelectedFile(file);
         setResults(null);
+        setIsAnalyzing(false);
         
         const url = URL.createObjectURL(file);
         setImageUrl(url);
-    };
+    }, []);
 
     const handleAnalyze = async () => {
         if (!selectedFile || !user) return;
@@ -123,8 +128,8 @@ export default function Dashboard() {
 
             if (insertError) throw insertError;
 
-            // Refrescar sidebar
-            window.location.reload();
+            // Incrementar el contador para refrescar el sidebar
+            setRefreshSidebar(prev => prev + 1);
 
         } catch (error) {
             console.error('Error analyzing image:', error);
@@ -178,6 +183,7 @@ export default function Dashboard() {
                     onNewAnalysis={handleNewAnalysis}
                     onSelectAnalysis={handleSelectAnalysis}
                     currentAnalysisId={selectedAnalysis?.id}
+                    refreshTrigger={refreshSidebar}
                 />
 
                 <main className="flex-1 p-8">
