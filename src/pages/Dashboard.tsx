@@ -186,68 +186,92 @@ export default function Dashboard() {
                     refreshTrigger={refreshSidebar}
                 />
 
-                <main className="flex-1 p-8 overflow-y-auto">
+                <main className="flex-1 overflow-hidden flex flex-col">
                     {showNewAnalysis && !results ? (
-                        <div className="max-w-2xl mx-auto space-y-6">
-                            <h2 className="text-2xl font-bold text-gray-900">Nuevo Análisis</h2>
-                            
-                            <ImageUploader 
-                                onImageSelect={handleImageSelect}
-                                isAnalyzing={isAnalyzing}
-                            />
-                            
-                            {selectedFile && !isAnalyzing && (
-                                <div className="space-y-4">
-                                    <img 
-                                        src={imageUrl} 
-                                        alt="Vista previa" 
-                                        className="w-full rounded-lg shadow-md"
-                                    />
-                                    <button
-                                        onClick={handleAnalyze}
-                                        className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold text-lg flex items-center justify-center space-x-2"
-                                    >
-                                        <span>🤖</span>
-                                        <span>Analizar con IA</span>
-                                    </button>
-                                </div>
-                            )}
+                        <div className="flex-1 overflow-y-auto p-6">
+                            <div className="max-w-4xl mx-auto">
+                                <h2 className="text-2xl font-bold text-gray-900 mb-6">Nuevo Análisis</h2>
+                                
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    {/* Columna izquierda: Uploader o Preview */}
+                                    <div>
+                                        {!selectedFile ? (
+                                            <ImageUploader 
+                                                onImageSelect={handleImageSelect}
+                                                isAnalyzing={isAnalyzing}
+                                            />
+                                        ) : (
+                                            <div className="space-y-4">
+                                                <img 
+                                                    src={imageUrl} 
+                                                    alt="Vista previa" 
+                                                    className="w-full h-64 object-cover rounded-lg shadow-md"
+                                                />
+                                                {!isAnalyzing && (
+                                                    <button
+                                                        onClick={handleAnalyze}
+                                                        className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold flex items-center justify-center space-x-2"
+                                                    >
+                                                        <span>Analizar con IA</span>
+                                                    </button>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
 
-                            {isAnalyzing && (
-                                <div className="flex flex-col items-center justify-center py-12 space-y-4">
-                                    <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
-                                    <p className="text-lg font-semibold text-gray-700">Analizando imagen...</p>
+                                    {/* Columna derecha: Info o Loading */}
+                                    <div className="flex items-center justify-center">
+                                        {isAnalyzing ? (
+                                            <div className="flex flex-col items-center space-y-4">
+                                                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
+                                                <p className="text-lg font-semibold text-gray-700">Analizando imagen...</p>
+                                            </div>
+                                        ) : selectedFile ? (
+                                            <div className="text-center space-y-4 p-6 bg-blue-50 rounded-lg">
+                                                <svg className="w-16 h-16 text-blue-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                                <p className="text-gray-700 font-medium">
+                                                    Imagen cargada correctamente
+                                                </p>
+                                                <p className="text-sm text-gray-600">
+                                                    Haz clic en "Analizar con IA" para comenzar
+                                                </p>
+                                            </div>
+                                        ) : null}
+                                    </div>
                                 </div>
-                            )}
+                            </div>
                         </div>
                     ) : results ? (
-                        <div className="space-y-6">
-                            <div className="flex justify-between items-center">
-                                <h2 className="text-2xl font-bold text-gray-900">
-                                    {selectedAnalysis ? 'Análisis Guardado' : 'Resultado del Análisis'}
-                                </h2>
-                                {user.subscription_tier === 'premium' && (
-                                    <button
-                                        onClick={handleExport}
-                                        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors font-semibold flex items-center space-x-2"
-                                    >
-                                        <span>📥</span>
-                                        <span>Exportar CSV</span>
-                                    </button>
-                                )}
-                            </div>
-
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                <div>
-                                    <AnalysisResults results={results} imageUrl={imageUrl} />
+                        <div className="flex-1 overflow-y-auto p-6">
+                            <div className="max-w-7xl mx-auto space-y-4">
+                                <div className="flex justify-between items-center">
+                                    <h2 className="text-2xl font-bold text-gray-900">
+                                        {selectedAnalysis ? 'Análisis Guardado' : 'Resultado del Análisis'}
+                                    </h2>
+                                    {user.subscription_tier === 'premium' && (
+                                        <button
+                                            onClick={handleExport}
+                                            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors font-semibold flex items-center space-x-2"
+                                        >
+                                            <span>Exportar CSV</span>
+                                        </button>
+                                    )}
                                 </div>
-                                <div>
-                                    <DetailedAnalysis results={results} />
+
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <div className="space-y-4">
+                                        <AnalysisResults results={results} imageUrl={imageUrl} />
+                                    </div>
+                                    <div className="space-y-4">
+                                        <DetailedAnalysis results={results} />
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     ) : (
-                        <div className="text-center py-20">
+                        <div className="flex-1 flex items-center justify-center">
                             <p className="text-gray-500 text-lg">Cargando análisis...</p>
                         </div>
                     )}
