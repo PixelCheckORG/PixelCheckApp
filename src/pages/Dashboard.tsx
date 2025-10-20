@@ -175,10 +175,10 @@ export default function Dashboard() {
     if (!user) return null;
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="h-screen bg-gray-50 flex flex-col overflow-hidden">
             <Header />
             
-            <div className="flex">
+            <div className="flex flex-1 overflow-hidden">
                 <Sidebar 
                     onNewAnalysis={handleNewAnalysis}
                     onSelectAnalysis={handleSelectAnalysis}
@@ -186,7 +186,7 @@ export default function Dashboard() {
                     refreshTrigger={refreshSidebar}
                 />
 
-                <main className="flex-1 p-8">
+                <main className="flex-1 p-8 overflow-y-auto">
                     {showNewAnalysis && !results ? (
                         <div className="max-w-2xl mx-auto space-y-6">
                             <h2 className="text-2xl font-bold text-gray-900">Nuevo Análisis</h2>
