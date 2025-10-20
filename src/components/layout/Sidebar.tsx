@@ -129,10 +129,20 @@ export default function Sidebar({ onNewAnalysis, onSelectAnalysis, currentAnalys
                                                 : 'bg-gray-50 hover:bg-gray-100 border-2 border-transparent'
                                         }`}
                                     >
-                                        <div className="flex items-start space-x-2">
-                                            <span className="flex-shrink-0">
-                                                {getClassificationIcon()}
-                                            </span>
+                                        <div className="flex items-start space-x-3">
+                                            {analysis.image_url ? (
+                                                <div className="flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden bg-gray-200 border border-gray-300">
+                                                    <img 
+                                                        src={analysis.image_url} 
+                                                        alt={analysis.image_name}
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <span className="flex-shrink-0">
+                                                    {getClassificationIcon()}
+                                                </span>
+                                            )}
                                             <div className="flex-1 min-w-0">
                                                 <p className="text-sm font-medium text-gray-900 truncate">
                                                     {analysis.image_name}
@@ -167,14 +177,24 @@ export default function Sidebar({ onNewAnalysis, onSelectAnalysis, currentAnalys
                             <button
                                 key={analysis.id}
                                 onClick={() => onSelectAnalysis(analysis)}
-                                className={`w-full p-2 rounded-lg transition-colors ${
+                                className={`w-full h-12 rounded-lg transition-colors overflow-hidden ${
                                     currentAnalysisId === analysis.id
                                         ? 'bg-blue-50 border-2 border-blue-500'
-                                        : 'bg-gray-50 hover:bg-gray-100'
+                                        : 'bg-gray-50 hover:bg-gray-100 border-2 border-transparent'
                                 }`}
                                 title={analysis.image_name}
                             >
-                                {getClassificationIcon()}
+                                {analysis.image_url ? (
+                                    <img 
+                                        src={analysis.image_url} 
+                                        alt={analysis.image_name}
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center">
+                                        {getClassificationIcon()}
+                                    </div>
+                                )}
                             </button>
                         ))}
                     </div>

@@ -188,13 +188,13 @@ export default function Dashboard() {
 
                 <main className="flex-1 overflow-hidden flex flex-col">
                     {showNewAnalysis && !results ? (
-                        <div className="flex-1 overflow-y-auto p-6">
-                            <div className="max-w-4xl mx-auto">
-                                <h2 className="text-2xl font-bold text-gray-900 mb-6">Nuevo Análisis</h2>
+                        <div className="flex-1 overflow-y-auto p-8 flex justify-center">
+                            <div className="max-w-5xl w-full pt-12">
+                                <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Nuevo Análisis</h2>
                                 
-                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <div className="w-full flex justify-center">
                                     {/* Columna izquierda: Uploader o Preview */}
-                                    <div>
+                                    <div className="max-w-3xl w-full">
                                         {!selectedFile ? (
                                             <ImageUploader 
                                                 onImageSelect={handleImageSelect}
@@ -218,9 +218,11 @@ export default function Dashboard() {
                                             </div>
                                         )}
                                     </div>
+                                </div>
 
-                                    {/* Columna derecha: Info o Loading */}
-                                    <div className="flex items-center justify-center">
+                                {/* Info o Loading - Solo se muestra cuando hay archivo seleccionado */}
+                                {(isAnalyzing || selectedFile) && (
+                                    <div className="flex justify-center mt-8">
                                         {isAnalyzing ? (
                                             <div className="flex flex-col items-center space-y-4">
                                                 <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
@@ -240,7 +242,7 @@ export default function Dashboard() {
                                             </div>
                                         ) : null}
                                     </div>
-                                </div>
+                                )}
                             </div>
                         </div>
                     ) : results ? (

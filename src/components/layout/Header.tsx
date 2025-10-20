@@ -7,7 +7,7 @@ export default function Header() {
 
     return (
         <header className="bg-white border-b border-gray-200 flex-shrink-0">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="w-full px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
                     <Link 
                         to={user ? "/dashboard" : "/"} 
@@ -27,18 +27,18 @@ export default function Header() {
                                 )}
                                 <Link
                                     to="/pricing"
-                                    className="text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium"
+                                    className="bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 transition-all transform hover:scale-105 shadow-md hover:shadow-lg text-sm font-semibold"
                                 >
-                                    Planes
+                                    Ver Planes
                                 </Link>
                             </>
                         ) : (
                             <>
                                 <Link
                                     to="/pricing"
-                                    className="text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium"
+                                    className="bg-blue-600 text-white px-6 py-2.5 rounded-lg hover:bg-blue-700 transition-all transform hover:scale-105 shadow-md hover:shadow-lg text-sm font-semibold"
                                 >
-                                    Planes
+                                    Ver Planes
                                 </Link>
                                 <Link
                                     to="/login"
@@ -48,7 +48,7 @@ export default function Header() {
                                 </Link>
                                 <Link
                                     to="/register"
-                                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                                    className="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
                                 >
                                     Registrarse
                                 </Link>
