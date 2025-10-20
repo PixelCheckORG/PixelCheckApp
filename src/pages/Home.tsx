@@ -6,6 +6,7 @@ import DetailedAnalysis from '../components/analysis/DetailedAnalysis';
 import { PixelCheckAnalyzer } from '../lib/analyzer';
 import { supabase } from '../lib/supabase';
 import { useAuthStore } from '../store/useAuthStore';
+import { useLanguage } from '../contexts/LanguageContext';
 import type { AnalysisResults as AnalysisResultsType } from '../types';
 
 export default function Home() {
@@ -14,6 +15,7 @@ export default function Home() {
     const [results, setResults] = useState<AnalysisResultsType | null>(null);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const { getSessionId } = useAuthStore();
+    const { t } = useLanguage();
 
     const handleImageSelect = async (file: File) => {
         setSelectedFile(file);
@@ -83,47 +85,46 @@ export default function Home() {
 
         } catch (error) {
             console.error('Error analyzing image:', error);
-            alert('Error al analizar la imagen. Por favor intenta de nuevo.');
+            alert(t('common.error'));
         } finally {
             setIsAnalyzing(false);
         }
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors">
             <Header />
-            
+
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <div className="text-center mb-12">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                        Detector de Imágenes Generadas por IA
+                    <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                        {t('home.title')}
                     </h1>
-                    <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                        Utiliza algoritmos de Machine Learning avanzados para detectar si una imagen 
-                        ha sido generada por inteligencia artificial, es una fotografía real o un diseño gráfico.
+                    <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                        {t('home.description')}
                     </p>
                 </div>
 
                 {!results ? (
                     <div className="max-w-2xl mx-auto space-y-6">
-                        <ImageUploader 
+                        <ImageUploader
                             onImageSelect={handleImageSelect}
                             isAnalyzing={isAnalyzing}
                         />
-                        
+
                         {selectedFile && !isAnalyzing && (
                             <div className="space-y-4">
-                                <img 
-                                    src={imageUrl} 
-                                    alt="Vista previa" 
+                                <img
+                                    src={imageUrl}
+                                    alt="Vista previa"
                                     className="w-full rounded-lg shadow-md"
                                 />
                                 <button
                                     onClick={handleAnalyze}
-                                    className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold text-lg flex items-center justify-center space-x-2"
+                                    className="w-full bg-blue-600 dark:bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors font-semibold text-lg flex items-center justify-center space-x-2"
                                 >
                                     <span>🤖</span>
-                                    <span>Analizar con IA</span>
+                                    <span>{t('home.analyzeButton')}</span>
                                 </button>
                             </div>
                         )}
@@ -131,8 +132,8 @@ export default function Home() {
                         {isAnalyzing && (
                             <div className="flex flex-col items-center justify-center py-12 space-y-4">
                                 <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
-                                <p className="text-lg font-semibold text-gray-700">Analizando imagen...</p>
-                                <p className="text-sm text-gray-500">Esto puede tomar unos segundos</p>
+                                <p className="text-lg font-semibold text-gray-700 dark:text-gray-300">{t('dashboard.analyzing')}</p>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">{t('uploader.pleaseWait')}</p>
                             </div>
                         )}
                     </div>
@@ -146,9 +147,9 @@ export default function Home() {
                                     setSelectedFile(null);
                                     setImageUrl('');
                                 }}
-                                className="w-full mt-6 bg-gray-600 text-white py-3 rounded-lg hover:bg-gray-700 transition-colors font-semibold"
+                                className="w-full mt-6 bg-gray-600 dark:bg-gray-700 text-white py-3 rounded-lg hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors font-semibold"
                             >
-                                Analizar otra imagen
+                                {t('dashboard.analyzeAnother')}
                             </button>
                         </div>
                         <div>
@@ -158,13 +159,13 @@ export default function Home() {
                 )}
             </main>
 
-            <footer className="bg-white border-t border-gray-200 mt-20">
+            <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 mt-20 transition-colors">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center">
-                    <p className="text-gray-600">
-                        PixelCheck utiliza algoritmos de ML avanzados para detectar imágenes generadas por IA
+                    <p className="text-gray-600 dark:text-gray-400">
+                        PixelCheck - {t('home.title')}
                     </p>
-                    <p className="text-sm text-gray-500 mt-2">
-                        Incluye detección de diseños gráficos - Resultado indicativo
+                    <p className="text-sm text-gray-500 dark:text-gray-500 mt-2">
+                        {t('home.description')}
                     </p>
                 </div>
             </footer>

@@ -8,11 +8,13 @@ import DetailedAnalysis from '../components/analysis/DetailedAnalysis';
 import { PixelCheckAnalyzer } from '../lib/analyzer';
 import { supabase } from '../lib/supabase';
 import { useAuthStore } from '../store/useAuthStore';
+import { useLanguage } from '../contexts/LanguageContext';
 import type { AnalysisResults as AnalysisResultsType, ImageAnalysis } from '../types';
 
 export default function Dashboard() {
     const navigate = useNavigate();
     const { user } = useAuthStore();
+    const { t } = useLanguage();
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [imageUrl, setImageUrl] = useState<string>('');
     const [results, setResults] = useState<AnalysisResultsType | null>(null);
@@ -133,7 +135,7 @@ export default function Dashboard() {
 
         } catch (error) {
             console.error('Error analyzing image:', error);
-            alert('Error al analizar la imagen. Por favor intenta de nuevo.');
+            alert(t('common.error'));
         } finally {
             setIsAnalyzing(false);
         }
@@ -141,7 +143,7 @@ export default function Dashboard() {
 
     const handleExport = async () => {
         if (!results || user?.subscription_tier !== 'premium') {
-            alert('Esta función solo está disponible para usuarios Premium');
+            alert(t('common.error'));
             return;
         }
 
@@ -175,11 +177,11 @@ export default function Dashboard() {
     if (!user) return null;
 
     return (
-        <div className="h-screen bg-gray-50 flex flex-col overflow-hidden">
+        <div className="h-screen bg-gray-50 dark:bg-gray-950 flex flex-col overflow-hidden transition-colors">
             <Header />
-            
+
             <div className="flex flex-1 overflow-hidden">
-                <Sidebar 
+                <Sidebar
                     onNewAnalysis={handleNewAnalysis}
                     onSelectAnalysis={handleSelectAnalysis}
                     currentAnalysisId={selectedAnalysis?.id}
@@ -190,29 +192,29 @@ export default function Dashboard() {
                     {showNewAnalysis && !results ? (
                         <div className="flex-1 overflow-y-auto p-8 flex justify-center">
                             <div className="max-w-5xl w-full pt-12">
-                                <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Nuevo Análisis</h2>
-                                
+                                <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">{t('dashboard.newAnalysis')}</h2>
+
                                 <div className="w-full flex justify-center">
                                     {/* Columna izquierda: Uploader o Preview */}
                                     <div className="max-w-3xl w-full">
                                         {!selectedFile ? (
-                                            <ImageUploader 
+                                            <ImageUploader
                                                 onImageSelect={handleImageSelect}
                                                 isAnalyzing={isAnalyzing}
                                             />
                                         ) : (
                                             <div className="space-y-4">
-                                                <img 
-                                                    src={imageUrl} 
-                                                    alt="Vista previa" 
+                                                <img
+                                                    src={imageUrl}
+                                                    alt="Vista previa"
                                                     className="w-full h-64 object-cover rounded-lg shadow-md"
                                                 />
                                                 {!isAnalyzing && (
                                                     <button
                                                         onClick={handleAnalyze}
-                                                        className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold flex items-center justify-center space-x-2"
+                                                        className="w-full bg-blue-600 dark:bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors font-semibold flex items-center justify-center space-x-2"
                                                     >
-                                                        <span>Analizar con IA</span>
+                                                        <span>{t('dashboard.analyzeWithAI')}</span>
                                                     </button>
                                                 )}
                                             </div>
@@ -226,18 +228,18 @@ export default function Dashboard() {
                                         {isAnalyzing ? (
                                             <div className="flex flex-col items-center space-y-4">
                                                 <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
-                                                <p className="text-lg font-semibold text-gray-700">Analizando imagen...</p>
+                                                <p className="text-lg font-semibold text-gray-700 dark:text-gray-300">{t('dashboard.analyzing')}</p>
                                             </div>
                                         ) : selectedFile ? (
-                                            <div className="text-center space-y-4 p-6 bg-blue-50 rounded-lg">
-                                                <svg className="w-16 h-16 text-blue-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <div className="text-center space-y-4 p-6 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                                                <svg className="w-16 h-16 text-blue-500 dark:text-blue-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                 </svg>
-                                                <p className="text-gray-700 font-medium">
-                                                    Imagen cargada correctamente
+                                                <p className="text-gray-700 dark:text-gray-300 font-medium">
+                                                    {t('dashboard.imageLoaded')}
                                                 </p>
-                                                <p className="text-sm text-gray-600">
-                                                    Haz clic en "Analizar con IA" para comenzar
+                                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                                    {t('dashboard.analyzeWithAI')}
                                                 </p>
                                             </div>
                                         ) : null}
@@ -249,15 +251,15 @@ export default function Dashboard() {
                         <div className="flex-1 overflow-y-auto p-6">
                             <div className="max-w-7xl mx-auto space-y-4">
                                 <div className="flex justify-between items-center">
-                                    <h2 className="text-2xl font-bold text-gray-900">
-                                        {selectedAnalysis ? 'Análisis Guardado' : 'Resultado del Análisis'}
+                                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                                        {selectedAnalysis ? t('dashboard.savedAnalysis') : t('dashboard.analysisResult')}
                                     </h2>
                                     {user.subscription_tier === 'premium' && (
                                         <button
                                             onClick={handleExport}
-                                            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors font-semibold flex items-center space-x-2"
+                                            className="bg-green-600 dark:bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-700 dark:hover:bg-green-600 transition-colors font-semibold flex items-center space-x-2"
                                         >
-                                            <span>Exportar CSV</span>
+                                            <span>{t('dashboard.exportCSV')}</span>
                                         </button>
                                     )}
                                 </div>
@@ -274,7 +276,7 @@ export default function Dashboard() {
                         </div>
                     ) : (
                         <div className="flex-1 flex items-center justify-center">
-                            <p className="text-gray-500 text-lg">Cargando análisis...</p>
+                            <p className="text-gray-500 dark:text-gray-400 text-lg">{t('dashboard.loadingAnalysis')}</p>
                         </div>
                     )}
                 </main>

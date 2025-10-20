@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react'
 import { Upload, Loader2 } from 'lucide-react'
+import { useLanguage } from '../../contexts/LanguageContext'
 
 interface ImageUploaderProps {
     onImageSelect: (file: File) => void
@@ -8,6 +9,7 @@ interface ImageUploaderProps {
 
 export default function ImageUploader({ onImageSelect, isAnalyzing }: ImageUploaderProps) {
     const [dragActive, setDragActive] = useState(false)
+    const { t } = useLanguage()
 
     const handleDrag = useCallback((e: React.DragEvent) => {
         e.preventDefault()
@@ -48,12 +50,12 @@ export default function ImageUploader({ onImageSelect, isAnalyzing }: ImageUploa
                 <label
                     htmlFor="image-upload"
                     className={`
-              relative flex flex-col items-center justify-center w-full h-80 
+              relative flex flex-col items-center justify-center w-full h-80
               border-4 border-dashed rounded-2xl cursor-pointer
               transition-all duration-200 ease-in-out
               ${dragActive
-                            ? 'border-blue-600 bg-blue-50 shadow-xl scale-105'
-                            : 'border-gray-300 bg-white hover:bg-blue-50 hover:border-blue-500 hover:shadow-lg'
+                            ? 'border-blue-600 bg-blue-50 dark:bg-blue-950 shadow-xl scale-105'
+                            : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-950 hover:border-blue-500 hover:shadow-lg'
                         }
               ${isAnalyzing ? 'pointer-events-none opacity-50' : ''}
             `}
@@ -64,26 +66,26 @@ export default function ImageUploader({ onImageSelect, isAnalyzing }: ImageUploa
                 >
                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
                         {isAnalyzing ? (
-                            <Loader2 className="w-16 h-16 text-blue-600 animate-spin mb-6" />
+                            <Loader2 className="w-16 h-16 text-blue-600 dark:text-blue-400 animate-spin mb-6" />
                         ) : (
-                            <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mb-6">
-                                <Upload className="w-10 h-10 text-blue-600" />
+                            <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mb-6">
+                                <Upload className="w-10 h-10 text-blue-600 dark:text-blue-400" />
                             </div>
                         )}
-                        <p className="mb-3 text-2xl font-bold text-gray-800">
-                            {isAnalyzing ? 'Analizando imagen...' : 'Arrastra una imagen aquí'}
+                        <p className="mb-3 text-2xl font-bold text-gray-800 dark:text-white">
+                            {isAnalyzing ? t('uploader.analyzing') : t('uploader.dragDrop')}
                         </p>
-                        <p className="text-base text-gray-600 mb-2">
-                            {isAnalyzing ? 'Por favor espera' : 'o haz clic para seleccionar'}
+                        <p className="text-base text-gray-600 dark:text-gray-400 mb-2">
+                            {isAnalyzing ? t('uploader.pleaseWait') : t('uploader.orClick')}
                         </p>
                         {!isAnalyzing && (
-                            <div className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg font-medium text-sm shadow-md">
-                                Seleccionar Archivo
+                            <div className="mt-4 px-6 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg font-medium text-sm shadow-md">
+                                {t('uploader.selectFile')}
                             </div>
                         )}
                         {!isAnalyzing && (
-                            <p className="text-xs text-gray-400 mt-4">
-                                PNG, JPG, GIF hasta 10MB
+                            <p className="text-xs text-gray-400 dark:text-gray-500 mt-4">
+                                {t('uploader.fileTypes')}
                             </p>
                         )}
                     </div>
