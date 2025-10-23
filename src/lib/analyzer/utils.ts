@@ -1,5 +1,3 @@
-import { AnalysisResults } from '../../types';
-
 export class ImageUtils {
     static formatFileSize(bytes: number): string {
         if (bytes < 1024) return bytes + ' B';

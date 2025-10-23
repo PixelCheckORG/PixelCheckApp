@@ -95,15 +95,15 @@ export class PixelCheckAnalyzer {
         };
     }
 
-    private analyzeWatermark(imageData: ImageData) {
+    private analyzeWatermark(_imageData: ImageData) {
         // Análisis simplificado de watermark
         const watermarkScore = Math.random() * 0.5; // Placeholder
-        
+
         return {
             watermarkScore,
             hasWatermark: watermarkScore > 0.3,
-            interpretation: watermarkScore > 0.3 
-                ? 'Posible watermark detectado' 
+            interpretation: watermarkScore > 0.3
+                ? 'Posible watermark detectado'
                 : 'No se detectaron watermarks evidentes',
         };
     }
@@ -111,7 +111,6 @@ export class PixelCheckAnalyzer {
     private analyzeSymmetry(imageData: ImageData) {
         const { width, height, data } = imageData;
         let horizontalDiff = 0;
-        let verticalDiff = 0;
         let comparisons = 0;
 
         // Comparar píxeles horizontales (izquierda vs derecha)

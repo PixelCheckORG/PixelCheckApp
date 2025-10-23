@@ -1,24 +1,11 @@
 import { Link } from 'react-router-dom';
 import { useAuthStore } from '../../store/useAuthStore';
-import { useTheme } from '../../contexts/ThemeContext';
 import { useLanguage } from '../../contexts/LanguageContext';
-import { Search, Sun, Moon, Monitor, Languages } from 'lucide-react';
-import { useState } from 'react';
+import { Search } from 'lucide-react';
 
 export default function Header() {
     const { user } = useAuthStore();
-    const { theme, setTheme } = useTheme();
-    const { language, setLanguage, t } = useLanguage();
-    const [showThemeMenu, setShowThemeMenu] = useState(false);
-    const [showLanguageMenu, setShowLanguageMenu] = useState(false);
-
-    const themeIcons = {
-        light: Sun,
-        dark: Moon,
-        system: Monitor,
-    };
-
-    const ThemeIcon = themeIcons[theme];
+    const { t } = useLanguage();
 
     return (
         <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 flex-shrink-0 transition-colors">
