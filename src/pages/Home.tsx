@@ -84,15 +84,18 @@ export default function Home() {
                     image_url: publicUrl,
                     image_name: selectedFile.name,
                     image_size: selectedFile.size,
-                    api_image_id: apiResult.imageId,
-                    label: apiResult.label,
-                    confidence: apiResult.confidence,
-                    model_version: apiResult.modelVersion,
-                    prob_ai: apiResult.details.prob_ai,
-                    prob_real: apiResult.details.prob_real,
-                    threshold: apiResult.details.threshold,
-                    feature_scores: apiResult.details.features,
-                    observations: apiResult.details.observations,
+                    // Campo legacy para compatibilidad con esquema antiguo
+                    classification: apiResult.label === 'AI' ? 'ai-generated' : 'real',
+                    confidence: apiResult.confidence.toString(),
+                    // Nuevos campos de la API (agregar a la tabla de Supabase)
+                    // api_image_id: apiResult.imageId,
+                    // label: apiResult.label,
+                    // model_version: apiResult.modelVersion,
+                    // prob_ai: apiResult.details.prob_ai,
+                    // prob_real: apiResult.details.prob_real,
+                    // threshold: apiResult.details.threshold,
+                    // feature_scores: apiResult.details.features,
+                    // observations: apiResult.details.observations,
                 });
 
             if (insertError) {
