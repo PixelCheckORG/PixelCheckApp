@@ -81,7 +81,7 @@ class PixelCheckAPI {
      */
     async uploadImage(file: File): Promise<UploadResponse> {
         const formData = new FormData();
-        formData.append('file', file);
+        formData.append('image', file);  // La API espera el campo 'image'
 
         try {
             const response = await fetch(`${this.baseUrl}/images/upload`, {
