@@ -1,5 +1,34 @@
+/**
+ * @deprecated Este analizador local está deprecado.
+ * Ahora usamos la API de PixelCheck: src/lib/api/pixelcheck.ts
+ * Este archivo se mantiene solo como referencia histórica.
+ */
 import { ImageUtils } from './utils';
-import { AnalysisResults, MLClassification } from '../../types';
+
+// Tipos locales (ya no se exportan desde types)
+interface MLClassification {
+    classification: 'real' | 'ai-generated' | 'graphic-design' | 'uncertain';
+    confidence: 'high' | 'medium' | 'low';
+    probability: number;
+    allProbabilities: {
+        real: number;
+        aiGenerated: number;
+        graphicDesign: number;
+    };
+    features: number[];
+}
+
+interface AnalysisResults {
+    imageWidth: number;
+    imageHeight: number;
+    colorAnalysis: any;
+    transparencyAnalysis: any;
+    noiseAnalysis: any;
+    watermarkAnalysis: any;
+    symmetryAnalysis: any;
+    metadataAnalysis: any;
+    mlClassification: MLClassification;
+}
 
 export class PixelCheckAnalyzer {
     async analyzeImage(file: File): Promise<AnalysisResults> {

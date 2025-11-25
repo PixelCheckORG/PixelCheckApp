@@ -71,12 +71,6 @@ export default function Sidebar({ onNewAnalysis, onSelectAnalysis, currentAnalys
         return <ImageIcon className="w-5 h-5 text-gray-600 dark:text-gray-400" />;
     };
 
-    const getConfidenceText = (confidence: string) => {
-        if (confidence === 'high') return t('sidebar.highConfidence');
-        if (confidence === 'medium') return t('sidebar.mediumConfidence');
-        return t('sidebar.lowConfidence');
-    };
-
     return (
         <>
             <div
