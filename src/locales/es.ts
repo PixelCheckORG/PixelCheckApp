@@ -48,6 +48,8 @@ export const es = {
     title: 'Detector de Imágenes Generadas por IA',
     description: 'Utiliza algoritmos de Machine Learning para determinar si una imagen fue creada por inteligencia artificial',
     analyzeButton: 'Analizar con IA',
+    uploadingToServer: 'Subiendo imagen al servidor...',
+    processingAI: 'Analizando con IA...',
   },
 
   // Dashboard
@@ -102,10 +104,11 @@ export const es = {
 
   // Analysis Results
   analysis: {
+    result: 'Resultado',
     realImage: 'Imagen Real',
+    realImageDesc: 'Esta imagen parece ser una fotografía real o imagen natural',
     aiGenerated: 'Generada por IA',
-    graphicDesign: 'Diseño Gráfico',
-    uncertain: 'Resultado Incierto',
+    aiGeneratedDesc: 'Esta imagen parece haber sido generada por inteligencia artificial',
     highConfidence: 'Alta Confianza',
     mediumConfidence: 'Confianza Media',
     lowConfidence: 'Baja Confianza',
@@ -116,11 +119,8 @@ export const es = {
     noiseAnalysis: 'Análisis de Ruido',
     watermarks: 'Watermarks',
     symmetry: 'Simetría',
-    mlFeatures: 'Características ML',
-    limitedPalette: 'Paleta limitada',
-    richDiversity: 'Rica diversidad cromática',
-    transparentPixels: 'Píxeles transparentes',
-    opaqueImage: 'Imagen opaca',
+    featureScores: 'Puntuaciones de Características',
+    modelVersion: 'Versión del Modelo',
   },
 
   // Image Uploader

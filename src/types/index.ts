@@ -1,4 +1,5 @@
 // Tipos principales de la aplicación
+// Actualizado para usar la API de PixelCheck
 
 export interface User {
     id: string;
@@ -8,6 +9,25 @@ export interface User {
     created_at: string;
 }
 
+// Scores de características del análisis (desde la API)
+export interface FeatureScores {
+    color_score: number;
+    noise_score: number;
+    symmetry_score: number;
+    watermark_score: number;
+    transparency_score: number;
+}
+
+// Observaciones textuales del análisis
+export interface Observations {
+    noise: string;
+    colors: string;
+    symmetry: string;
+    watermark: string;
+    transparency: string;
+}
+
+// Análisis guardado en Supabase (desde la API)
 export interface ImageAnalysis {
     id: string;
     user_id: string | null;
@@ -15,91 +35,38 @@ export interface ImageAnalysis {
     image_url: string;
     image_name: string;
     image_size: number;
-    image_width: number;
-    image_height: number;
-    classification: 'real' | 'ai-generated' | 'graphic-design' | 'uncertain';
-    confidence: 'high' | 'medium' | 'low';
-    probability: number;
-    color_analysis: ColorAnalysis;
-    transparency_analysis: TransparencyAnalysis;
-    noise_analysis: NoiseAnalysis;
-    watermark_analysis: WatermarkAnalysis;
-    symmetry_analysis: SymmetryAnalysis;
-    metadata_analysis: MetadataAnalysis;
-    ml_features: number[];
-    probability_real: number;
-    probability_ai: number;
-    probability_graphic: number;
+    api_image_id: string;  // ID de la imagen en la API de PixelCheck
+    
+    // Resultados del análisis ML (desde API)
+    label: 'AI' | 'REAL';
+    confidence: number;  // 0-1 decimal
+    model_version: string;
+    
+    // Probabilidades
+    prob_ai: number;
+    prob_real: number;
+    threshold: number;
+    
+    // Features scores
+    feature_scores: FeatureScores;
+    
+    // Observaciones textuales
+    observations: Observations;
+    
     created_at: string;
 }
 
-export interface ColorAnalysis {
-    uniqueColors: number;
-    diversityScore: number;
-    hasLimitedPalette: boolean;
-    dominantColors: string[];
-}
-
-export interface TransparencyAnalysis {
-    transparencyRatio: number;
-    hasSignificantTransparency: boolean;
-    transparentPixels: number;
-    totalPixels: number;
-}
-
-export interface NoiseAnalysis {
-    noiseScore: number;
-    noiseLevel: string;
-    interpretation: string;
-}
-
-export interface WatermarkAnalysis {
-    watermarkScore: number;
-    hasWatermark: boolean;
-    interpretation: string;
-}
-
-export interface SymmetryAnalysis {
-    horizontalSymmetry: number;
-    verticalSymmetry: number;
-    symmetryAiScore: number;
-    interpretation: string;
-}
-
-export interface MetadataAnalysis {
-    basicMetadata: {
-        format: string;
-        dimensions: string;
-        size: string;
-    };
-    aiModelAnalysis: {
-        signatures: string[];
-        detected: boolean;
-    };
-}
-
-export interface MLClassification {
-    classification: 'real' | 'ai-generated' | 'graphic-design' | 'uncertain';
-    confidence: 'high' | 'medium' | 'low';
-    probability: number;
-    allProbabilities: {
-        real: number;
-        aiGenerated: number;
-        graphicDesign: number;
-    };
-    features: number[];
-}
-
-export interface AnalysisResults {
-    imageWidth: number;
-    imageHeight: number;
-    colorAnalysis: ColorAnalysis;
-    transparencyAnalysis: TransparencyAnalysis;
-    noiseAnalysis: NoiseAnalysis;
-    watermarkAnalysis: WatermarkAnalysis;
-    symmetryAnalysis: SymmetryAnalysis;
-    metadataAnalysis: MetadataAnalysis;
-    mlClassification: MLClassification;
+// Resultado del análisis para mostrar en la UI
+export interface AnalysisResult {
+    apiImageId: string;
+    label: 'AI' | 'REAL';
+    confidence: number;
+    modelVersion: string;
+    probAi: number;
+    probReal: number;
+    threshold: number;
+    featureScores: FeatureScores;
+    observations: Observations;
 }
 
 export interface Subscription {
@@ -114,3 +81,4 @@ export interface Subscription {
     current_period_end: string;
     created_at: string;
 }
+

@@ -3,23 +3,25 @@ import Header from '../components/layout/Header';
 import ImageUploader from '../components/upload/ImageUploader';
 import AnalysisResults from '../components/analysis/AnalysisResults';
 import DetailedAnalysis from '../components/analysis/DetailedAnalysis';
-import { PixelCheckAnalyzer } from '../lib/analyzer';
+import { pixelCheckAPI } from '../lib/api/pixelcheck';
 import { supabase } from '../lib/supabase';
 import { useAuthStore } from '../store/useAuthStore';
 import { useLanguage } from '../contexts/LanguageContext';
-import type { AnalysisResults as AnalysisResultsType } from '../types';
+import type { AnalysisResult } from '../types';
 
 export default function Home() {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [imageUrl, setImageUrl] = useState<string>('');
-    const [results, setResults] = useState<AnalysisResultsType | null>(null);
+    const [results, setResults] = useState<AnalysisResult | null>(null);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
-    const { getSessionId } = useAuthStore();
+    const [analysisStatus, setAnalysisStatus] = useState<string>('');
+    const { user, getSessionId } = useAuthStore();
     const { t } = useLanguage();
 
     const handleImageSelect = async (file: File) => {
         setSelectedFile(file);
         setResults(null);
+        setAnalysisStatus('');
         
         // Crear URL temporal para mostrar la imagen
         const url = URL.createObjectURL(file);
@@ -30,64 +32,90 @@ export default function Home() {
         if (!selectedFile) return;
 
         setIsAnalyzing(true);
+        setAnalysisStatus('uploading');
 
         try {
-            // Realizar análisis
-            const analyzer = new PixelCheckAnalyzer();
-            const analysisResults = await analyzer.analyzeImage(selectedFile);
+            // 1. Analizar imagen con la API de PixelCheck
+            const apiResult = await pixelCheckAPI.analyzeImage(
+                selectedFile,
+                (status) => setAnalysisStatus(status)
+            );
             
-            setResults(analysisResults);
+            // 2. Convertir resultado de API a formato de la UI
+            const analysisResult: AnalysisResult = {
+                apiImageId: apiResult.imageId,
+                label: apiResult.label,
+                confidence: apiResult.confidence,
+                modelVersion: apiResult.modelVersion,
+                probAi: apiResult.details.prob_ai,
+                probReal: apiResult.details.prob_real,
+                threshold: apiResult.details.threshold,
+                featureScores: apiResult.details.features,
+                observations: apiResult.details.observations,
+            };
+            
+            setResults(analysisResult);
 
-            // Subir imagen a Supabase Storage
+            // 3. Subir imagen a Supabase Storage
             const sessionId = getSessionId();
-            const fileName = `${sessionId}/${Date.now()}_${selectedFile.name}`;
+            const userId = user?.id;
+            const folderPath = userId || sessionId;
+            const fileName = `${folderPath}/${Date.now()}_${selectedFile.name}`;
             
             const { error: uploadError } = await supabase.storage
                 .from('image-analyses')
                 .upload(fileName, selectedFile);
 
-            if (uploadError) throw uploadError;
+            if (uploadError) {
+                console.error('Error uploading to storage:', uploadError);
+            }
 
-            // Obtener URL pública
+            // 4. Obtener URL pública
             const { data: { publicUrl } } = supabase.storage
                 .from('image-analyses')
                 .getPublicUrl(fileName);
 
-            // Guardar análisis en base de datos
-            const { data: { user } } = await supabase.auth.getUser();
-            
+            // 5. Guardar análisis en base de datos Supabase
             const { error: insertError } = await supabase
                 .from('image_analyses')
                 .insert({
-                    user_id: user?.id || null,
-                    session_id: user ? null : sessionId,
+                    user_id: userId || null,
+                    session_id: userId ? null : sessionId,
                     image_url: publicUrl,
                     image_name: selectedFile.name,
                     image_size: selectedFile.size,
-                    image_width: analysisResults.imageWidth,
-                    image_height: analysisResults.imageHeight,
-                    classification: analysisResults.mlClassification.classification,
-                    confidence: analysisResults.mlClassification.confidence,
-                    probability: analysisResults.mlClassification.probability,
-                    color_analysis: analysisResults.colorAnalysis,
-                    transparency_analysis: analysisResults.transparencyAnalysis,
-                    noise_analysis: analysisResults.noiseAnalysis,
-                    watermark_analysis: analysisResults.watermarkAnalysis,
-                    symmetry_analysis: analysisResults.symmetryAnalysis,
-                    metadata_analysis: analysisResults.metadataAnalysis,
-                    ml_features: analysisResults.mlClassification.features,
-                    probability_real: analysisResults.mlClassification.allProbabilities.real,
-                    probability_ai: analysisResults.mlClassification.allProbabilities.aiGenerated,
-                    probability_graphic: analysisResults.mlClassification.allProbabilities.graphicDesign,
+                    api_image_id: apiResult.imageId,
+                    label: apiResult.label,
+                    confidence: apiResult.confidence,
+                    model_version: apiResult.modelVersion,
+                    prob_ai: apiResult.details.prob_ai,
+                    prob_real: apiResult.details.prob_real,
+                    threshold: apiResult.details.threshold,
+                    feature_scores: apiResult.details.features,
+                    observations: apiResult.details.observations,
                 });
 
-            if (insertError) throw insertError;
+            if (insertError) {
+                console.error('Error saving analysis:', insertError);
+            }
 
         } catch (error) {
             console.error('Error analyzing image:', error);
             alert(t('common.error'));
         } finally {
             setIsAnalyzing(false);
+            setAnalysisStatus('');
+        }
+    };
+
+    const getStatusText = () => {
+        switch (analysisStatus) {
+            case 'uploading':
+                return t('home.uploadingToServer') || 'Subiendo imagen...';
+            case 'processing':
+                return t('home.processingAI') || 'Analizando con IA...';
+            default:
+                return t('dashboard.analyzing');
         }
     };
 
@@ -132,7 +160,7 @@ export default function Home() {
                         {isAnalyzing && (
                             <div className="flex flex-col items-center justify-center py-12 space-y-4">
                                 <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
-                                <p className="text-lg font-semibold text-gray-700 dark:text-gray-300">{t('dashboard.analyzing')}</p>
+                                <p className="text-lg font-semibold text-gray-700 dark:text-gray-300">{getStatusText()}</p>
                                 <p className="text-sm text-gray-500 dark:text-gray-400">{t('uploader.pleaseWait')}</p>
                             </div>
                         )}

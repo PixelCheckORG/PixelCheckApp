@@ -10,18 +10,6 @@ if (!supabaseUrl || !supabaseAnonKey) {
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 // Types para las tablas de Supabase
-export interface Analysis {
-    id: string
-    user_id: string | null
-    image_url: string
-    image_name: string
-    classification: 'real' | 'ai-generated' | 'graphic-design' | 'uncertain'
-    confidence: 'high' | 'medium' | 'low'
-    probability: number
-    features: Record<string, any>
-    created_at: string
-}
-
 export interface UserProfile {
     id: string
     email: string

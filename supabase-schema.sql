@@ -1,4 +1,5 @@
 -- PixelCheck Database Schema for Supabase
+-- ACTUALIZADO: Integración con PixelCheck API
 -- Este script configura todas las tablas necesarias para la aplicación
 
 -- Extensiones necesarias
@@ -14,37 +15,47 @@ CREATE TABLE IF NOT EXISTS user_profiles (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Tabla de análisis de imágenes
+-- Tabla de análisis de imágenes (ACTUALIZADA para API de PixelCheck)
 CREATE TABLE IF NOT EXISTS image_analyses (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
     session_id UUID, -- Para usuarios no registrados
+    
+    -- Información de la imagen
     image_url TEXT NOT NULL,
     image_name TEXT NOT NULL,
     image_size INTEGER,
-    image_width INTEGER,
-    image_height INTEGER,
     
-    -- Resultados del análisis ML
-    classification TEXT NOT NULL CHECK (classification IN ('real', 'ai-generated', 'graphic-design', 'uncertain')),
-    confidence TEXT NOT NULL CHECK (confidence IN ('high', 'medium', 'low')),
-    probability DECIMAL(5,4) NOT NULL,
+    -- ID de la imagen en la API de PixelCheck
+    api_image_id TEXT NOT NULL,
     
-    -- Análisis detallado (JSON)
-    color_analysis JSONB,
-    transparency_analysis JSONB,
-    noise_analysis JSONB,
-    watermark_analysis JSONB,
-    symmetry_analysis JSONB,
-    metadata_analysis JSONB,
+    -- Resultados del análisis ML (desde API)
+    label TEXT NOT NULL CHECK (label IN ('AI', 'REAL')),
+    confidence DECIMAL(6,4) NOT NULL, -- 0.0000 a 1.0000
+    model_version TEXT NOT NULL DEFAULT 'v1',
     
-    -- Características ML (array de números)
-    ml_features DECIMAL[],
+    -- Probabilidades
+    prob_ai DECIMAL(10,8) NOT NULL,
+    prob_real DECIMAL(10,8) NOT NULL,
+    threshold DECIMAL(3,2) NOT NULL DEFAULT 0.5,
     
-    -- Probabilidades de todas las clases
-    probability_real DECIMAL(5,4),
-    probability_ai DECIMAL(5,4),
-    probability_graphic DECIMAL(5,4),
+    -- Feature scores (JSON)
+    feature_scores JSONB NOT NULL DEFAULT '{
+        "color_score": 0,
+        "noise_score": 0,
+        "symmetry_score": 0,
+        "watermark_score": 0,
+        "transparency_score": 0
+    }'::jsonb,
+    
+    -- Observaciones textuales (JSON)
+    observations JSONB NOT NULL DEFAULT '{
+        "noise": "",
+        "colors": "",
+        "symmetry": "",
+        "watermark": "",
+        "transparency": ""
+    }'::jsonb,
     
     created_at TIMESTAMPTZ DEFAULT NOW(),
     
@@ -84,7 +95,9 @@ CREATE TABLE IF NOT EXISTS usage_limits (
 -- Índices para mejorar el rendimiento
 CREATE INDEX IF NOT EXISTS idx_analyses_user_id ON image_analyses(user_id);
 CREATE INDEX IF NOT EXISTS idx_analyses_session_id ON image_analyses(session_id);
+CREATE INDEX IF NOT EXISTS idx_analyses_api_image_id ON image_analyses(api_image_id);
 CREATE INDEX IF NOT EXISTS idx_analyses_created_at ON image_analyses(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_analyses_label ON image_analyses(label);
 CREATE INDEX IF NOT EXISTS idx_subscriptions_user_id ON subscriptions(user_id);
 CREATE INDEX IF NOT EXISTS idx_usage_user_id ON usage_limits(user_id);
 CREATE INDEX IF NOT EXISTS idx_usage_session_id ON usage_limits(session_id);

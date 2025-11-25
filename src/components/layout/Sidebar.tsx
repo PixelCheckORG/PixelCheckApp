@@ -161,15 +161,14 @@ export default function Sidebar({ onNewAnalysis, onSelectAnalysis, currentAnalys
                                                 </p>
                                                 <div className="flex items-center space-x-2 mt-2">
                                                     <span className={`text-xs px-2 py-1 rounded ${
-                                                        analysis.classification === 'real'
+                                                        analysis.label === 'REAL'
                                                             ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
-                                                            : analysis.classification === 'ai-generated'
-                                                            ? 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200'
-                                                            : analysis.classification === 'graphic-design'
-                                                            ? 'bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200'
-                                                            : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200'
+                                                            : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200'
                                                     }`}>
-                                                        {getConfidenceText(analysis.confidence)}
+                                                        {analysis.label === 'REAL' ? '✅ Real' : '🤖 IA'}
+                                                    </span>
+                                                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                                                        {(analysis.confidence * 100).toFixed(0)}%
                                                     </span>
                                                 </div>
                                             </div>
