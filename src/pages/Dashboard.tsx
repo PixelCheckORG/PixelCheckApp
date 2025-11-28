@@ -187,38 +187,6 @@ export default function Dashboard() {
         }
     };
 
-    const handleExport = async () => {
-        if (!results || user?.subscription_tier !== 'premium') {
-            alert(t('common.error'));
-            return;
-        }
-
-        // Exportar a CSV
-        const csvContent = generateCSV(results);
-        const blob = new Blob([csvContent], { type: 'text/csv' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `analisis_${Date.now()}.csv`;
-        a.click();
-    };
-
-    const generateCSV = (results: AnalysisResult) => {
-        let csv = 'Campo,Valor\n';
-        csv += `Clasificación,${results.label === 'AI' ? 'Generada por IA' : 'Imagen Real'}\n`;
-        csv += `Confianza,${(results.confidence * 100).toFixed(2)}%\n`;
-        csv += `Probabilidad IA,${(results.probAi * 100).toFixed(2)}%\n`;
-        csv += `Probabilidad Real,${(results.probReal * 100).toFixed(2)}%\n`;
-        csv += `Versión del Modelo,${results.modelVersion}\n`;
-        csv += `Score Color,${(results.featureScores.color_score * 100).toFixed(1)}%\n`;
-        csv += `Score Ruido,${(results.featureScores.noise_score * 100).toFixed(1)}%\n`;
-        csv += `Score Simetría,${(results.featureScores.symmetry_score * 100).toFixed(1)}%\n`;
-        csv += `Score Watermark,${(results.featureScores.watermark_score * 100).toFixed(1)}%\n`;
-        csv += `Score Transparencia,${(results.featureScores.transparency_score * 100).toFixed(1)}%\n`;
-        
-        return csv;
-    };
-
     if (!user) return null;
 
     return (
