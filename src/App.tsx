@@ -7,6 +7,9 @@ import Dashboard from './pages/Dashboard'
 import Pricing from './pages/Pricing'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import PaymentSuccess from './pages/PaymentSuccess'
+import PaymentFailure from './pages/PaymentFailure'
+import PaymentPending from './pages/PaymentPending'
 import { Toaster } from 'react-hot-toast'
 
 function App() {
@@ -43,6 +46,10 @@ function App() {
                             element={user ? <Dashboard /> : <Navigate to="/login" replace />}
                         />
                         <Route path="/pricing" element={<Pricing />} />
+                        {/* Payment result pages */}
+                        <Route path="/payment/success" element={<PaymentSuccess />} />
+                        <Route path="/payment/failure" element={<PaymentFailure />} />
+                        <Route path="/payment/pending" element={<PaymentPending />} />
                     </Routes>
                 </BrowserRouter>
             </LanguageProvider>
