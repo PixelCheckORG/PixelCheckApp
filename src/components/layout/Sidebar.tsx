@@ -74,7 +74,7 @@ export default function Sidebar({ onNewAnalysis, onSelectAnalysis, currentAnalys
     return (
         <>
             <div
-                className={`bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 h-full flex flex-col transition-all duration-300 ${
+                className={`bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 h-full flex flex-col transition-all duration-300 overflow-hidden ${
                     isCollapsed ? 'w-16' : 'w-80'
                 }`}
             >
@@ -104,15 +104,15 @@ export default function Sidebar({ onNewAnalysis, onSelectAnalysis, currentAnalys
                     </button>
                 </div>
 
-            {/* Lista de análisis */}
-            <div className="flex-1 overflow-y-auto min-h-0">
-                {!isCollapsed ? (
-                    <div className="p-4">
-                        <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
-                            {t('sidebar.recentAnalysis')}
-                        </h3>
+                {/* Lista de análisis - con scroll */}
+                <div className="flex-1 overflow-y-auto min-h-0">
+                    {!isCollapsed ? (
+                        <div className="p-4">
+                            <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 sticky top-0 bg-white dark:bg-gray-900 py-2 -mt-2 -mx-4 px-4">
+                                {t('sidebar.recentAnalysis')}
+                            </h3>
 
-                        {loading ? (
+                            {loading ? (
                             <div className="flex items-center justify-center py-8">
                                 <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
                             </div>
@@ -200,7 +200,7 @@ export default function Sidebar({ onNewAnalysis, onSelectAnalysis, currentAnalys
                         ))}
                     </div>
                 )}
-            </div>
+                </div>
 
                 {/* User menu */}
                 <div className="border-t border-gray-200 dark:border-gray-700 relative flex-shrink-0">
