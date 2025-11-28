@@ -102,9 +102,11 @@ export default function Dashboard() {
             };
             
             setResults(analysisResult);
+            console.log('Results set, now uploading to Supabase Storage...');
 
             // 3. Subir imagen a Supabase Storage
             const fileName = `${user.id}/${Date.now()}_${selectedFile.name}`;
+            console.log('Uploading file:', fileName);
             
             const { error: uploadError } = await supabase.storage
                 .from('image-analyses')
@@ -112,14 +114,18 @@ export default function Dashboard() {
 
             if (uploadError) {
                 console.error('Error uploading to storage:', uploadError);
+            } else {
+                console.log('File uploaded successfully to storage');
             }
 
             // 4. Obtener URL pública
             const { data: { publicUrl } } = supabase.storage
                 .from('image-analyses')
                 .getPublicUrl(fileName);
+            console.log('Public URL:', publicUrl);
 
             // 5. Guardar análisis en base de datos Supabase
+            console.log('Inserting analysis to database...');
             const { error: insertError } = await supabase
                 .from('image_analyses')
                 .insert({
@@ -142,6 +148,8 @@ export default function Dashboard() {
 
             if (insertError) {
                 console.error('Error saving analysis:', insertError);
+            } else {
+                console.log('Analysis saved successfully to database');
             }
 
             // Incrementar el contador para refrescar el sidebar
