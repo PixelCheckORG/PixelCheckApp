@@ -340,14 +340,6 @@ export default function Dashboard() {
                                     <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
                                         {selectedAnalysis ? t('dashboard.savedAnalysis') : t('dashboard.analysisResult')}
                                     </h2>
-                                    {user.subscription_tier === 'premium' && (
-                                        <button
-                                            onClick={handleExport}
-                                            className="bg-green-600 dark:bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-700 dark:hover:bg-green-600 transition-colors font-semibold flex items-center space-x-2"
-                                        >
-                                            <span>{t('dashboard.exportCSV')}</span>
-                                        </button>
-                                    )}
                                 </div>
 
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
