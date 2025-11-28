@@ -214,9 +214,6 @@ class PixelCheckAPI {
         try {
             const response = await fetch(`${this.baseUrl}/reports/${reportId}`, {
                 method: 'GET',
-                headers: {
-                    'Accept': 'application/pdf',
-                },
             });
 
             if (!response.ok) {
