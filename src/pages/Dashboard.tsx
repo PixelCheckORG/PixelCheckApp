@@ -114,6 +114,7 @@ export default function Dashboard() {
 
             if (uploadError) {
                 console.error('Error uploading to storage:', uploadError);
+                // Continuar de todas formas, usar URL vacía
             } else {
                 console.log('File uploaded successfully to storage');
             }
@@ -125,8 +126,16 @@ export default function Dashboard() {
             console.log('Public URL:', publicUrl);
 
             // 5. Guardar análisis en base de datos Supabase
-            console.log('Inserting analysis to database...');
-            const { error: insertError } = await supabase
+            console.log('Inserting analysis to database with data:', {
+                user_id: user.id,
+                image_name: selectedFile.name,
+                api_image_id: apiResult.imageId,
+                label: apiResult.label,
+                confidence: apiResult.confidence,
+                report_id: apiResult.reportId,
+            });
+            
+            const { data: insertData, error: insertError } = await supabase
                 .from('image_analyses')
                 .insert({
                     user_id: user.id,
@@ -144,15 +153,18 @@ export default function Dashboard() {
                     feature_scores: apiResult.details.features,
                     observations: apiResult.details.observations,
                     report_id: apiResult.reportId,
-                });
+                })
+                .select();
 
             if (insertError) {
                 console.error('Error saving analysis:', insertError);
+                console.error('Error details:', JSON.stringify(insertError, null, 2));
             } else {
-                console.log('Analysis saved successfully to database');
+                console.log('Analysis saved successfully to database:', insertData);
             }
 
             // Incrementar el contador para refrescar el sidebar
+            console.log('Refreshing sidebar...');
             setRefreshSidebar(prev => prev + 1);
 
         } catch (error) {
