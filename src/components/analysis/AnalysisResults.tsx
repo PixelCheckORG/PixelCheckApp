@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { AnalysisResult } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useSubscription } from '../../hooks/useSubscription';
+import { useAuthStore } from '../../store/useAuthStore';
 import { pixelCheckAPI } from '../../lib/api/pixelcheck';
 
 interface AnalysisResultsProps {
@@ -11,7 +12,12 @@ interface AnalysisResultsProps {
 
 export default function AnalysisResults({ results, imageUrl }: AnalysisResultsProps) {
     const { t } = useLanguage();
-    const { isPremium } = useSubscription();
+    const { isPremium: isPremiumFromSubscription } = useSubscription();
+    const { user } = useAuthStore();
+    
+    // Verificar premium desde ambas fuentes: subscription hook O user profile
+    const isPremium = isPremiumFromSubscription || user?.subscription_tier === 'premium';
+    
     const [isDownloading, setIsDownloading] = useState(false);
     const [downloadError, setDownloadError] = useState<string | null>(null);
 

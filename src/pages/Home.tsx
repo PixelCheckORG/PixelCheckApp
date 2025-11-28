@@ -137,33 +137,91 @@ export default function Home() {
 
                 {!results ? (
                     <div className="max-w-2xl mx-auto space-y-6">
-                        <ImageUploader
-                            onImageSelect={handleImageSelect}
-                            isAnalyzing={isAnalyzing}
-                        />
-
-                        {selectedFile && !isAnalyzing && (
-                            <div className="space-y-4">
-                                <img
-                                    src={imageUrl}
-                                    alt="Vista previa"
-                                    className="w-full rounded-lg shadow-md"
-                                />
-                                <button
-                                    onClick={handleAnalyze}
-                                    className="w-full bg-blue-600 dark:bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors font-semibold text-lg flex items-center justify-center space-x-2"
-                                >
-                                    <span>🤖</span>
-                                    <span>{t('home.analyzeButton')}</span>
-                                </button>
+                        {!selectedFile ? (
+                            <ImageUploader
+                                onImageSelect={handleImageSelect}
+                                isAnalyzing={isAnalyzing}
+                            />
+                        ) : (
+                            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
+                                {/* Header con nombre del archivo */}
+                                <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center space-x-3">
+                                            <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <p className="text-white font-semibold truncate max-w-xs">{selectedFile.name}</p>
+                                                <p className="text-blue-100 text-sm">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={() => {
+                                                setSelectedFile(null);
+                                                setImageUrl('');
+                                            }}
+                                            className="w-8 h-8 bg-white/20 hover:bg-white/30 rounded-lg flex items-center justify-center transition-colors"
+                                        >
+                                            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                {/* Imagen con efecto */}
+                                <div className="relative group">
+                                    <div className="aspect-video bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
+                                        <img
+                                            src={imageUrl}
+                                            alt="Vista previa"
+                                            className="w-full h-full object-contain"
+                                        />
+                                    </div>
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none"></div>
+                                </div>
+                                
+                                {/* Botón de analizar */}
+                                <div className="p-6">
+                                    {isAnalyzing ? (
+                                        <div className="flex flex-col items-center space-y-4 py-4">
+                                            <div className="relative">
+                                                <div className="w-16 h-16 border-4 border-blue-200 dark:border-blue-800 rounded-full"></div>
+                                                <div className="absolute inset-0 w-16 h-16 border-4 border-blue-600 rounded-full border-t-transparent animate-spin"></div>
+                                            </div>
+                                            <p className="text-lg font-semibold text-gray-700 dark:text-gray-300">{getStatusText()}</p>
+                                            <p className="text-sm text-gray-500 dark:text-gray-400">{t('uploader.pleaseWait')}</p>
+                                            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
+                                                <div className="bg-blue-600 h-2 rounded-full animate-pulse" style={{ width: '60%' }}></div>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            onClick={handleAnalyze}
+                                            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-4 rounded-xl font-semibold text-lg flex items-center justify-center space-x-3 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]"
+                                        >
+                                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                                            </svg>
+                                            <span>{t('home.analyzeButton')}</span>
+                                        </button>
+                                    )}
+                                </div>
                             </div>
                         )}
 
-                        {isAnalyzing && (
-                            <div className="flex flex-col items-center justify-center py-12 space-y-4">
-                                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
-                                <p className="text-lg font-semibold text-gray-700 dark:text-gray-300">{getStatusText()}</p>
-                                <p className="text-sm text-gray-500 dark:text-gray-400">{t('uploader.pleaseWait')}</p>
+                        {/* Mensaje de éxito cuando hay imagen cargada */}
+                        {selectedFile && !isAnalyzing && (
+                            <div className="flex justify-center">
+                                <div className="flex items-center space-x-2 text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30 px-4 py-2 rounded-full">
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span className="font-medium text-sm">{t('dashboard.imageLoaded')}</span>
+                                </div>
                             </div>
                         )}
                     </div>
