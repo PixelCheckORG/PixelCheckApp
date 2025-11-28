@@ -10,10 +10,12 @@ export default function PaymentSuccess() {
     const [searchParams] = useSearchParams();
     const { user } = useAuthStore();
     const [isVerifying, setIsVerifying] = useState(true);
-    const [isVerified, setIsVerified] = useState(false);
+    // isVerified se usa para futuras mejoras de UI
+    const [, setIsVerified] = useState(false);
 
     const paymentId = searchParams.get('payment_id');
-    const status = searchParams.get('status');
+    // status disponible para logging
+    const _status = searchParams.get('status');
     const externalReference = searchParams.get('external_reference');
 
     useEffect(() => {

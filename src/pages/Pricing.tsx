@@ -4,13 +4,11 @@ import { Check, Crown, Zap, Shield, Infinity, Loader2, CreditCard } from 'lucide
 import Header from '../components/layout/Header';
 import { useAuthStore } from '../store/useAuthStore';
 import { useSubscription } from '../hooks/useSubscription';
-import { useLanguage } from '../contexts/LanguageContext';
 
 export default function Pricing() {
     const navigate = useNavigate();
     const { user } = useAuthStore();
     const { isPremium, subscription, daysRemaining, createCheckout, isCreatingCheckout } = useSubscription();
-    const { t } = useLanguage();
     const [error, setError] = useState<string | null>(null);
 
     const handleSubscribe = async () => {

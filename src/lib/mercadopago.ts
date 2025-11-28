@@ -18,10 +18,9 @@ export interface PaymentStatus {
 }
 
 class MercadoPagoService {
-  private publicKey: string;
-
   constructor() {
-    this.publicKey = MP_PUBLIC_KEY || '';
+    // Public key disponible para uso futuro si se necesita SDK de MP
+    // const publicKey = MP_PUBLIC_KEY || '';
   }
 
   /**
