@@ -121,6 +121,10 @@ export const es = {
     symmetry: 'Simetría',
     featureScores: 'Puntuaciones de Características',
     modelVersion: 'Versión del Modelo',
+    downloadPdf: 'Descargar Reporte PDF',
+    downloading: 'Descargando...',
+    premiumFeature: 'Función Premium',
+    upgradeToPdf: 'Actualiza a Premium para descargar reportes PDF detallados',
   },
 
   // Image Uploader

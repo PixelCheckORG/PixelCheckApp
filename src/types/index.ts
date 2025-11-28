@@ -53,6 +53,9 @@ export interface ImageAnalysis {
     // Observaciones textuales
     observations: Observations;
     
+    // ID del reporte PDF (para descarga premium)
+    report_id: string | null;
+    
     created_at: string;
 }
 
@@ -67,6 +70,7 @@ export interface AnalysisResult {
     threshold: number;
     featureScores: FeatureScores;
     observations: Observations;
+    reportId: string | null;  // ID del reporte para descarga PDF (solo premium)
 }
 
 export interface Subscription {

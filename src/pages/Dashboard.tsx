@@ -58,6 +58,7 @@ export default function Dashboard() {
             threshold: analysis.threshold,
             featureScores: analysis.feature_scores,
             observations: analysis.observations,
+            reportId: analysis.report_id || null,
         };
         
         setResults(reconstructedResults);
@@ -97,6 +98,7 @@ export default function Dashboard() {
                 threshold: apiResult.details.threshold,
                 featureScores: apiResult.details.features,
                 observations: apiResult.details.observations,
+                reportId: apiResult.reportId,
             };
             
             setResults(analysisResult);
@@ -135,6 +137,7 @@ export default function Dashboard() {
                     threshold: apiResult.details.threshold,
                     feature_scores: apiResult.details.features,
                     observations: apiResult.details.observations,
+                    report_id: apiResult.reportId,
                 });
 
             if (insertError) {

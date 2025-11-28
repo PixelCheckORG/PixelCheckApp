@@ -189,6 +189,61 @@ class PixelCheckAPI {
             return false;
         }
     }
+
+    /**
+     * Descarga el reporte PDF de un análisis
+     * Solo disponible para usuarios premium
+     */
+    async downloadReport(reportId: string): Promise<Blob> {
+        try {
+            const response = await fetch(`${this.baseUrl}/reports/${reportId}`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/pdf',
+                },
+            });
+
+            if (!response.ok) {
+                if (response.status === 404) {
+                    throw new Error('Reporte no encontrado');
+                }
+                if (response.status === 403) {
+                    throw new Error('Acceso denegado. Esta función es solo para usuarios premium.');
+                }
+                throw new Error(`Error descargando reporte: ${response.status}`);
+            }
+
+            return response.blob();
+        } catch (error) {
+            if (error instanceof TypeError && error.message === 'Failed to fetch') {
+                throw new Error('No se pudo conectar con el servidor.');
+            }
+            throw error;
+        }
+    }
+
+    /**
+     * Descarga el reporte PDF y lo guarda como archivo
+     */
+    async downloadReportAsFile(reportId: string, filename?: string): Promise<void> {
+        const blob = await this.downloadReport(reportId);
+        
+        // Crear URL del blob
+        const url = window.URL.createObjectURL(blob);
+        
+        // Crear elemento <a> temporal para descarga
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename || `pixelcheck-report-${reportId}.pdf`;
+        
+        // Agregar al DOM, hacer click, y remover
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Liberar URL del blob
+        window.URL.revokeObjectURL(url);
+    }
 }
 
 // Exportar instancia singleton

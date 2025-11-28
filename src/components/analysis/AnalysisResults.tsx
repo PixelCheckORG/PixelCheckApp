@@ -1,5 +1,8 @@
+import { useState } from 'react';
 import type { AnalysisResult } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useSubscription } from '../../hooks/useSubscription';
+import { pixelCheckAPI } from '../../lib/api/pixelcheck';
 
 interface AnalysisResultsProps {
     results: AnalysisResult;
@@ -8,6 +11,9 @@ interface AnalysisResultsProps {
 
 export default function AnalysisResults({ results, imageUrl }: AnalysisResultsProps) {
     const { t } = useLanguage();
+    const { isPremium } = useSubscription();
+    const [isDownloading, setIsDownloading] = useState(false);
+    const [downloadError, setDownloadError] = useState<string | null>(null);
 
     const getClassificationInfo = () => {
         const info = {
@@ -36,6 +42,25 @@ export default function AnalysisResults({ results, imageUrl }: AnalysisResultsPr
 
     const classInfo = getClassificationInfo();
     const confidenceInfo = getConfidenceLevel();
+
+    // Función para descargar el reporte PDF
+    const handleDownloadPDF = async () => {
+        if (!results.reportId) {
+            setDownloadError('No hay reporte disponible para esta imagen');
+            return;
+        }
+
+        try {
+            setIsDownloading(true);
+            setDownloadError(null);
+            await pixelCheckAPI.downloadReportAsFile(results.reportId, `analisis-${results.apiImageId}.pdf`);
+        } catch (error) {
+            console.error('Error downloading PDF:', error);
+            setDownloadError(error instanceof Error ? error.message : 'Error al descargar el reporte');
+        } finally {
+            setIsDownloading(false);
+        }
+    };
 
     return (
         <div className="space-y-4">
@@ -108,6 +133,56 @@ export default function AnalysisResults({ results, imageUrl }: AnalysisResultsPr
                         {t('analysis.modelVersion')}: {results.modelVersion} | Threshold: {results.threshold}
                     </p>
                 </div>
+
+                {/* Botón de descarga PDF - Solo para premium */}
+                {isPremium && results.reportId && (
+                    <div className="mt-4 pt-3 border-t border-gray-100 dark:border-gray-700">
+                        <button
+                            onClick={handleDownloadPDF}
+                            disabled={isDownloading}
+                            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {isDownloading ? (
+                                <>
+                                    <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    <span>{t('analysis.downloading') || 'Descargando...'}</span>
+                                </>
+                            ) : (
+                                <>
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    <span>{t('analysis.downloadPdf') || 'Descargar Reporte PDF'}</span>
+                                </>
+                            )}
+                        </button>
+                        {downloadError && (
+                            <p className="mt-2 text-sm text-red-500 text-center">{downloadError}</p>
+                        )}
+                    </div>
+                )}
+
+                {/* Mensaje para usuarios no premium */}
+                {!isPremium && (
+                    <div className="mt-4 pt-3 border-t border-gray-100 dark:border-gray-700">
+                        <div className="flex items-center gap-2 p-3 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                            </svg>
+                            <div>
+                                <p className="text-sm font-medium text-purple-900 dark:text-purple-100">
+                                    {t('analysis.premiumFeature') || 'Función Premium'}
+                                </p>
+                                <p className="text-xs text-purple-700 dark:text-purple-300">
+                                    {t('analysis.upgradeToPdf') || 'Actualiza a Premium para descargar reportes PDF detallados'}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

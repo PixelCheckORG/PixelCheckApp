@@ -57,6 +57,9 @@ CREATE TABLE IF NOT EXISTS image_analyses (
         "transparency": ""
     }'::jsonb,
     
+    -- ID del reporte PDF (para descarga premium)
+    report_id TEXT,
+    
     created_at TIMESTAMPTZ DEFAULT NOW(),
     
     -- Índice para búsquedas rápidas

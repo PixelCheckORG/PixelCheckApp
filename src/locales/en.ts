@@ -121,6 +121,10 @@ export const en = {
     symmetry: 'Symmetry',
     featureScores: 'Feature Scores',
     modelVersion: 'Model Version',
+    downloadPdf: 'Download PDF Report',
+    downloading: 'Downloading...',
+    premiumFeature: 'Premium Feature',
+    upgradeToPdf: 'Upgrade to Premium to download detailed PDF reports',
   },
 
   // Image Uploader
