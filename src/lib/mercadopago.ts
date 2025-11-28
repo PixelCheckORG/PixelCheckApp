@@ -1,8 +1,6 @@
 // Servicio de Mercado Pago para PixelCheck
 import { supabase } from './supabase';
 
-const MP_PUBLIC_KEY = import.meta.env.VITE_MP_PUBLIC_KEY;
-
 export interface PaymentPreference {
   id: string;
   init_point: string;

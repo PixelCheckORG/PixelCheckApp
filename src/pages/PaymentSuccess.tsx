@@ -14,8 +14,6 @@ export default function PaymentSuccess() {
     const [, setIsVerified] = useState(false);
 
     const paymentId = searchParams.get('payment_id');
-    // status disponible para logging
-    const _status = searchParams.get('status');
     const externalReference = searchParams.get('external_reference');
 
     useEffect(() => {
