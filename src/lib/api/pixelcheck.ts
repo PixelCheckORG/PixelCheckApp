@@ -159,8 +159,24 @@ class PixelCheckAPI {
             try {
                 await new Promise(resolve => setTimeout(resolve, pollInterval));
                 console.log(`Polling attempt ${attempts + 1}/${maxAttempts} for imageId:`, uploadResponse.imageId);
-                const result = await this.getResult(uploadResponse.imageId);
+                let result = await this.getResult(uploadResponse.imageId);
                 console.log('Got result:', result);
+                
+                // Si el resultado está listo pero el reportId aún no existe,
+                // esperamos un poco y reintentamos para obtener el reportId
+                if (result.reportId === null) {
+                    console.log('Report not ready yet, waiting for reportId...');
+                    for (let i = 0; i < 3; i++) {
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        const updatedResult = await this.getResult(uploadResponse.imageId);
+                        if (updatedResult.reportId !== null) {
+                            console.log('Got reportId:', updatedResult.reportId);
+                            result = updatedResult;
+                            break;
+                        }
+                    }
+                }
+                
                 onStatusChange?.('completed');
                 return result;
             } catch (error) {
